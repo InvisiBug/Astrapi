@@ -1,0 +1,28 @@
+void drawImage(unsigned long time, const char picture[][totalLEDs][3], int pictureWidth) 
+{
+  currentTime = millis(); // Get the current time (Unix Time)
+  
+  while( (millis() < currentTime + (time * 1000)) && showPicture )
+  {
+    // if((column < pictureWidth) && (millis() < currentTime + (time * 1000)) && showPicture)
+    if(column < pictureWidth)
+    {
+      // for(int row = totalLEDs - 1; row > -1; row --) // row number (This may be wrong)
+      for(int row = totalLEDs; row >= 0; row --) // row number (This may be wrong)
+      {
+        currentLED[row].setRGB(
+          picture[column] [row] [redVal],   // Red
+          picture[column] [row] [greenVal], // Green
+          picture[column] [row] [blueVal]); // Blue
+        // serial << "Print" << endl;
+      }      
+      FastLED.show();
+      // Serial << FastLED.getFPS() << endl;
+      column ++;
+      delayMicroseconds(800); // How wide the image is (800 seems good)
+    }
+    else column = 0;
+    delayMicroseconds(1000); // Gap between images (1000 seems good)   
+    // button.tick(); // This is here to prevent the strip being update after a mode change
+  }
+}
