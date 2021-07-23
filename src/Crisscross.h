@@ -2,36 +2,35 @@
 #define CRISSCROSS_H
 #include "FastLED.h"
 
-class Crisscross
-{
-  public:
-    Crisscross(int totalLEDs, CRGB *currentLED, int interval);
+class Crisscross {
+ public:
+  Crisscross(int totalLEDs, CRGB *currentLED, int interval);
 
-    void run();
-    void run(int wait);
-    void reset();
-    void changeSpeed(int interval); // Time to change to next speed
-    void setInterval(int interval);
+  void run();
+  void run(int wait);
+  void reset();
+  void changeSpeed(int interval);  // Time to change to next speed
+  void setInterval(int interval);
 
-    int  getInterval();
-    
-  private:
-    CRGB *currentLED; // LED strip object
+  int getInterval();
 
-    int initialInterval;
+ private:
+  CRGB *currentLED;  // LED strip object
 
-    bool slowDown;
+  int initialInterval;
 
-    int totalLEDs; 
-    int totalSteps;
-    int currentStep;
+  bool slowDown;
 
-    // Timing Stuff
-    long currentMillis;
-    long lastMillis;
-    int  interval;
+  int totalLEDs;
+  int totalSteps;
+  int currentStep;
 
-    long speedChangeCurrentMillis;
-    long speedChangeLastMillis;
+  // Timing Stuff
+  long currentMillis;
+  long lastMillis;
+  int interval;
+
+  long speedChangeCurrentMillis;
+  long speedChangeLastMillis;
 };
 #endif

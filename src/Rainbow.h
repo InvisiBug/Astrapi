@@ -7,36 +7,35 @@ position according to a time dalay
 #define RAINBOW_H
 #include "FastLED.h"
 
-class Rainbow
-{
-  public:
-    Rainbow(int totalLEDs, CRGB *currentLED, int interval); // Constructor
+class Rainbow {
+ public:
+  Rainbow(int totalLEDs, CRGB *currentLED, int interval);  // Constructor
 
-    void run(); // Run using the intiial interval as the delay
-    void run(int wait); // Run using an argument as the delay
-    void reset();
-    void changeSpeed(int interval); // Not used but left in for later
-    void setInterval(int interval);
-    
-    int  getInterval();
+  void run();          // Run using the intiial interval as the delay
+  void run(int wait);  // Run using an argument as the delay
+  void reset();
+  void changeSpeed(int interval);  // Not used but left in for later
+  void setInterval(int interval);
 
-  private:
-    CRGB *currentLED; // LED strip object
+  int getInterval();
 
-    int initialInterval;
+ private:
+  CRGB *currentLED;  // LED strip object
 
-    bool slowDown;
+  int initialInterval;
 
-    int totalLEDs; 
-    int totalSteps;
-    int currentStep;
+  bool slowDown;
 
-    // Timing Stuff
-    long currentMillis;
-    long lastMillis;
-    int  interval;
+  int totalLEDs;
+  int totalSteps;
+  int currentStep;
 
-    long speedChangeCurrentMillis;
-    long speedChangeLastMillis;
+  // Timing Stuff
+  long currentMillis;
+  long lastMillis;
+  int interval;
+
+  long speedChangeCurrentMillis;
+  long speedChangeLastMillis;
 };
 #endif
