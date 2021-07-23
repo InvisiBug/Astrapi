@@ -1,7 +1,3 @@
-/*
-  This strand test is designed to run on the LED grid with the unio that I bought in Seg
-  
-*/
 ////////////////////////////////////////////////////////////////////////
 //  ###
 //   #  #    #  ####  #      #    # #####  ######  ####
@@ -13,8 +9,14 @@
 //
 ////////////////////////////////////////////////////////////////////////
 // Frameworks
+#include "ColourCycle.h"
 #include "FastLED.h"
 #include "Streaming.h"
+
+// Effects
+#include "ColourCycle.h"
+#include "Crisscross.h"  // Has some odd flickering
+#include "Fire.h"
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -27,7 +29,7 @@
 //  ######  ###### #      # #    # #   #   #  ####  #    #  ####
 //
 ////////////////////////////////////////////////////////////////////////
-#define totalLEDs 40  // Needs to be defined in Images.h <- look in to this later *NB*
+#define totalLEDs 125  // Needs to be defined in Images.h <- look in to this later *NB*
 
 #define dataPin D6
 
@@ -50,6 +52,11 @@ CRGB leds[totalLEDs];
 
 // Button
 
+// Effects
+Fire fire(totalLEDs, leds);
+Crisscross crissCross(totalLEDs, leds, 50);
+ColourCycle colourCycle(totalLEDs, leds, 50);
+
 ////////////////////////////////////////////////////////////////////////
 //
 //  #     #
@@ -61,7 +68,7 @@ CRGB leds[totalLEDs];
 //     #    #    # #    # # #    # #####  ###### ######  ####
 //
 ////////////////////////////////////////////////////////////////////////
-int LEDBrightness = 25;  // As a percentage (saved as a dynamic variable to let us change later)
+int LEDBrightness = 100;  // As a percentage (saved as a dynamic variable to let us change later)
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -82,6 +89,9 @@ void setup() {
   FastLED.setBrightness(LEDBrightness * 2.55);
   FastLED.setCorrection(0xFFB0F0);
   FastLED.setDither(1);
+
+  // crissCross.begin();
+  delay(1000);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -96,16 +106,12 @@ void setup() {
 //
 //////////////////////////////////////////////////////////////////////
 void loop() {
-  for (int i = 0; i < totalLEDs; i++) {
-    leds[i] = CRGB::Red;
-  }
-  FastLED.show();
-  delay(500);
+  fire.run(55, 120, 20, true);
+  // crissCross.run(50);
+  // colourCycle.run();
 
-  for (int i = 0; i < totalLEDs; i++) {
-    leds[i] = CRGB::Black;
-  }
-
-  FastLED.show();
-  delay(500);
+  // for (int i = 0; i < totalLEDs; i++) {
+  //   leds[i] = 0xff0000;
+  // }
+  // FastLED.show();
 }
