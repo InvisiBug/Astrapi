@@ -179,31 +179,3 @@ void loop() {
       break;
   }
 }
-
-int pos = 0;
-bool clear = false;
-void upDown() {
-  // FastLED.clear();  // clear all pixel data
-  // FastLED.show();
-  // for(int i = 0 )
-
-  if (!clear) {
-    leds[pos] = 0xff0000;
-    if (pos < totalLEDs) {
-      pos += 1;
-    } else {
-      clear = true;
-      pos = 0;
-    }
-  } else {
-    leds[pos] = 0x000000;
-    if (pos < totalLEDs) {
-      pos += 1;
-    } else {
-      clear = false;
-      pos = 0;
-    }
-  }
-
-  FastLED.show();
-}
