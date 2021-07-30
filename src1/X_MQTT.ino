@@ -51,6 +51,11 @@ void handleMQTT() {
 void messageReceived(char* topic, byte* payload, unsigned int length) {
   printMessage(payload, length);
   mode = (int)payload[0] - 48;  // Stupid ascii I think
+
+  Wire.beginTransmission(1);
+  // Wire.write((char)payload[0]);
+  Wire.write((char)payload[0]);
+  Wire.endTransmission();
 }
 
 void printMessage(byte* payload, int length) {

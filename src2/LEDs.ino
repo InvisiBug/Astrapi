@@ -8,17 +8,12 @@
 //  ### #    #  ####  ######  ####  #####  ######  ####
 //
 ////////////////////////////////////////////////////////////////////////
-// Frameworks
-#include <PubSubClient.h>
+
+#include <Wire.h>
 
 #include "ColourCycle.h"
 #include "FastLED.h"
 #include "Streaming.h"
-
-// Wifi Manager
-#include <DNSServer.h>
-#include <ESP8266WebServer.h>
-#include <WiFiManager.h>
 
 // Effects
 #include "ColourCycle.h"
@@ -62,8 +57,6 @@
 // LED Strip
 CRGB leds[totalLEDs];
 
-// Button
-
 // Effects
 Fire fire(totalLEDs, leds);
 Test test(totalLEDs, leds, 50);
@@ -72,11 +65,6 @@ Crisscross crissCross(totalLEDs, leds, 50);
 ColourCycle colourCycle(totalLEDs, leds, 50);
 ColourFade colourFade(totalLEDs, leds, 50);
 Rainbow rainbow(totalLEDs, leds, 50);
-
-WiFiClient espClient;
-PubSubClient mqtt(espClient);
-
-WiFiManager wifiManager;
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -90,19 +78,7 @@ WiFiManager wifiManager;
 //
 ////////////////////////////////////////////////////////////////////////
 int LEDBrightness = 100;  // As a percentage (saved as a dynamic variable to let us change later)
-
-const char* disconnectMsg = "Buttons Disconnected";
-
-// const char* mqttServerIP = "192.168.1.46";
-const char* mqttServerIP = "mqtt.kavanet.io";
-
-const char* nodeName = "Astrapi";
-
-int mode = 7;
-
-long connectionTimeout = (2 * 1000);
-// long lastWiFiReconnectAttempt = 0;
-long lastMQTTReconnectAttempt = 0;
+int mode = 0;
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -118,9 +94,6 @@ long lastMQTTReconnectAttempt = 0;
 void setup() {
   Serial.begin(115200);
 
-  wifiManager.autoConnect("Astrapi");
-  startMQTT();
-
   FastLED.addLeds<NEOPIXEL, dataPin>(leds, totalLEDs);
 
   FastLED.setBrightness(LEDBrightness * 2.55);
@@ -132,7 +105,11 @@ void setup() {
   FastLED.clear();  // clear all pixel data
   FastLED.show();
 
-  Serial << "\n|** " << nodeName << " **|" << endl;
+  Wire.begin(1);                 // Join I2C Bus with address 1
+  Wire.onReceive(receiveEvent);  // Data received event
+
+  digitalWrite(connectionLED, OFF);
+  Serial << "Astrapi LED Board Ready" << endl;
   delay(1000);
 }
 
@@ -148,8 +125,6 @@ void setup() {
 //
 //////////////////////////////////////////////////////////////////////
 void loop() {
-  handleMQTT();
-
   switch (mode) {
     case 0:
       FastLED.clear();  // clear all pixel data
@@ -178,4 +153,9 @@ void loop() {
       meteor.run();
       break;
   }
+}
+
+void receiveEvent(int howMany)  // This is the function for the I2C communication, this runs every time the processor detects new incoming data
+{
+  Serial << Wire.read() << endl;
 }

@@ -1,3 +1,4 @@
+// Dual core ESP32 tutorial =>https://randomnerdtutorials.com/esp32-dual-core-arduino-ide/
 ////////////////////////////////////////////////////////////////////////
 //  ###
 //   #  #    #  ####  #      #    # #####  ######  ####
@@ -10,13 +11,21 @@
 ////////////////////////////////////////////////////////////////////////
 // Frameworks
 #include <PubSubClient.h>
+#include <WiFiClient.h>
+#include <Wire.h>
 
+#include "FastLED.h"
 #include "Streaming.h"
+#include "WiFi.h"
 
-// Wifi Manager
-#include <DNSServer.h>
-#include <ESP8266WebServer.h>
-#include <WiFiManager.h>
+// Effects
+#include "ColourCycle.h"
+#include "ColourFade.h"
+#include "Crisscross.h"  // Has some odd flickering
+#include "Fire.h"
+#include "Meteor.h"
+#include "Rainbow.h"
+#include "Test.h"
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -29,13 +38,14 @@
 //  ######  ###### #      # #    # #   #   #  ####  #    #  ####
 //
 ////////////////////////////////////////////////////////////////////////
-#define totalLEDs 55
+#define totalLEDs 135
+#define LED_BUILTIN 2
 #define connectionLED LED_BUILTIN
 
-#define dataPin D6
+#define dataPin 4
 
-#define OFF HIGH
-#define ON LOW
+#define OFF LOW
+#define ON HIGH
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -48,11 +58,22 @@
 //  #     # #    # #    # #####  #    # #    # #    # ######
 //
 ////////////////////////////////////////////////////////////////////////
-
 WiFiClient espClient;
 PubSubClient mqtt(espClient);
 
-WiFiManager wifiManager;
+// LED Strip
+CRGB leds[totalLEDs];
+
+Fire fire(totalLEDs, leds);
+Test test(totalLEDs, leds, 50);
+Meteor meteor(totalLEDs, leds, 50);
+Crisscross crissCross(totalLEDs, leds, 50);
+ColourCycle colourCycle(totalLEDs, leds, 50);
+ColourFade colourFade(totalLEDs, leds, 50);
+Rainbow rainbow(totalLEDs, leds, 50);
+
+TaskHandle_t Task1;
+TaskHandle_t Task2;
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -67,18 +88,22 @@ WiFiManager wifiManager;
 ////////////////////////////////////////////////////////////////////////
 int LEDBrightness = 100;  // As a percentage (saved as a dynamic variable to let us change later)
 
-const char* disconnectMsg = "Buttons Disconnected";
-
-// const char* mqttServerIP = "192.168.1.46";
-const char* mqttServerIP = "mqtt.kavanet.io";
+const char* wifiSsid = "I Don't Mind";
+const char* wifiPassword = "Have2Biscuits";
 
 const char* nodeName = "Astrapi";
 
-int mode = 7;
+const char* disconnectMsg = "Astrapi Disconnected";
 
+const char* mqttServerIP = "mqtt.kavanet.io";
+
+// Wifi Params
+bool WiFiConnected = false;
 long connectionTimeout = (2 * 1000);
-// long lastWiFiReconnectAttempt = 0;
+long lastWiFiReconnectAttempt = 0;
 long lastMQTTReconnectAttempt = 0;
+
+int mode = 0;
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -94,13 +119,31 @@ long lastMQTTReconnectAttempt = 0;
 void setup() {
   Serial.begin(115200);
 
-  wifiManager.autoConnect("Astrapi");
+  xTaskCreatePinnedToCore(core1Loop, "Task1", 10000, NULL, 1, &Task1, 0);
+  delay(500);
+
+  xTaskCreatePinnedToCore(core2Loop, "Task2", 10000, NULL, 1, &Task2, 1);
+  delay(500);
+
+  disableCore0WDT();  // This prevents the WDT taking out an idle core
+  disableCore1WDT();  // the wifi code was triggering the WDT
+
+  FastLED.addLeds<NEOPIXEL, dataPin>(leds, totalLEDs);
+
+  FastLED.setBrightness(LEDBrightness * 2.55);
+  FastLED.setCorrection(0xFFB0F0);
+  FastLED.setDither(1);
+
+  FastLED.clear();  // clear all pixel data
+  FastLED.show();
+
+  startWifi();
   startMQTT();
 
   pinMode(connectionLED, OUTPUT);
 
   Serial << "\n|** " << nodeName << " **|" << endl;
-  delay(1000);
+  delay(100);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -114,6 +157,50 @@ void setup() {
 //  #     # #    # # #    #    #       #    #  ####   ####  #    # #    # #    #
 //
 //////////////////////////////////////////////////////////////////////
+void core1Loop(void* pvParameters) {
+  for (;;) {
+    handleMQTT();
+    handleWiFi();
+    // delay(500); // * Add this back if WDT issues come back
+  }
+}
+
+void core2Loop(void* pvParameters) {
+  for (;;) {
+    if (WiFi.status() == WL_CONNECTED) {
+      // Serial << mode << endl;
+      // delay(500);
+      switch (mode) {
+        case 0:
+          FastLED.clear();  // clear all pixel data
+          FastLED.show();
+          break;
+        case 1:
+          test.run(50);
+          break;
+        case 2:
+          colourCycle.run();
+          break;
+        case 3:
+          crissCross.run(50);
+          break;
+        case 4:
+          colourFade.run();
+          break;
+        case 5:
+
+          fire.run(55, 120, 20, true);
+          break;
+        case 6:
+          rainbow.run();
+          break;
+        case 7:
+          meteor.run();
+          break;
+      }
+    }
+  }
+}
+
 void loop() {
-  handleMQTT();
 }
