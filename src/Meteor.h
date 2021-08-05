@@ -12,6 +12,8 @@ class Meteor {
   void changeSpeed(int interval);  // Time to change to next speed
   void setInterval(int interval);
 
+  void fadeToBlack(int ledNo, byte fadeValue);
+
   int getInterval();
 
  private:
@@ -26,6 +28,7 @@ class Meteor {
   int totalLEDs;
   int totalSteps;
   int currentStep;
+  int currentLocation;
 
   bool clear;
   int pos = 0;

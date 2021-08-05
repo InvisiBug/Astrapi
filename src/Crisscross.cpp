@@ -34,10 +34,10 @@ void Crisscross::run(int wait) {
   currentMillis = millis();
 
   // Multiply first to remove rounding in an int
-  // currentLED[currentStep].setHue((255 * (currentStep + 1)) / totalLEDs);  // turn on leds
-  // currentLED[totalLEDs - currentStep - 1].setHue(255 - ((255 * (currentStep + 1)) / 55));
+  currentLED[currentStep].setHue((255 * (currentStep + 1)) / totalLEDs);  // turn on leds
+  currentLED[totalLEDs - currentStep - 1].setHue(255 - ((255 * (currentStep + 1)) / 55));
 
-  currentLED[currentStep].setHue(255);  // turn on leds
+  // currentLED[currentStep].setHue(255);  // turn on leds
   // currentLED[totalLEDs - currentStep - 1].setHue(255);
 
   FastLED.show();
@@ -46,7 +46,7 @@ void Crisscross::run(int wait) {
     lastMillis = currentMillis;
 
     currentLED[currentStep] = 0x000000;  // Turn off leds
-    // currentLED[totalLEDs - currentStep - 1] = 0x000000;
+    currentLED[totalLEDs - currentStep - 1] = 0x000000;
     FastLED.show();
 
     // this - 1 prevents the light going off the end of the stick

@@ -10,8 +10,10 @@ Meteor::Meteor(int totalLEDs, CRGB *currentLED, int interval) {
   this->interval = interval;
 
   currentStep = 0;
-  totalSteps = 255;
+  totalSteps = totalLEDs;
   clear = false;
+
+  currentLocation = totalLEDs - 1;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -30,101 +32,84 @@ void Meteor::run() {
 }
 
 void Meteor::run(int wait) {
+  wait = 50;
   currentMillis = millis();
+
+  int red = 101;
+  int green = 191;
+  int blue = 214;
+
+  // currentLED[currentLocation].setRGB(255, 255, 0);
+
+  FastLED.show();
 
   if (currentMillis - lastMillis >= wait) {
     lastMillis = currentMillis;
 
-    // for (int j = 0; j < totalLEDs * 2; j++) {
-    // int Position = 0;
+    // * Loop from here every 500 mil
 
-    int num1 = 127;  // 127
-    int num2 = 128;  // 128
-    int num3 = 255;  // 255
+    currentLED[currentLocation].setRGB(red, green, blue);
+    if (currentLocation < totalLEDs - 1) {
+      currentLED[currentLocation].setRGB(red / 2, green / 2, blue / 2);
+    }
+    if (currentLocation < totalLEDs - 2) {
+      currentLED[currentLocation + 2].setRGB(0, 0, 0);
+    }
 
-    if (a < totalLEDs * 2) {
-      Position++;
+    FastLED.show();
 
-      for (int b = 0; b < totalLEDs; b++) {
-        currentLED[b].setRGB(((sin(b + Position) * num1 + num2) / num3) * 0xff, ((sin(b + Position) * num1 + num2) / num3) * 0xff, ((sin(b + Position) * num1 + num2) / num3) * 0xff);
-      }
+    Serial << currentLocation << endl;
 
-      FastLED.show();
-      a++;
+    if (currentLocation > 0) {
+      currentLocation--;
     } else {
-      a = 0;
+      currentLocation = totalLEDs - 1;
     }
 
-    // for (int j = 0; j < totalLEDs * 2; j++) {
-    //   Position++;  // = 0; //Position + Rate;
-    //   for (int i = 0; i < totalLEDs; i++) {
-    //     // sine wave, 3 offset waves make a rainbow!
-    //     //float level = sin(i+Position) * 127 + 128;
-    //     //setPixel(i,level,0,0);
-    //     //float level = sin(i+Position) * 127 + 128;
-    //     // currentLED[i].setRGB(sin(i + Position) * 127 + 128) / 255) * 1, ((sin(i + Position) * 127 + 128) / 255) * 1, ((sin(i + Position) * 127 + 128) / 255) * 1);
-    //     currentLED[i].setRGB(((sin(i + Position) * 127 + 128) / 255) * 0xff, ((sin(i + Position) * 127 + 128) / 255) * 0xff, ((sin(i + Position) * 127 + 128) / 255) * 0xff);
-    //   }
-
-    //   FastLED.show();
-    // }
+    // if (currentStep < totalSteps - 1) {
+    //   currentStep++;
+    // } else {
+    //   currentStep = 0;
   }
+
+  // int num1 = 127;  // 127
+  // int num2 = 128;  // 128
+  // int num3 = 255;  // 255
+
+  // if (a < totalLEDs * 2) {
+  //   Position++;
+
+  //   for (int b = 0; b < totalLEDs; b++) {
+  //     currentLED[b].setRGB(((sin(b + Position) * num1 + num2) / num3) * 0xff, ((sin(b + Position) * num1 + num2) / num3) * 0xff, ((sin(b + Position) * num1 + num2) / num3) * 0xff);
+  //   }
+
+  //   FastLED.show();
+  //   a++;
+  // } else {
+  //   a = 0;
+  // }
 }
 
-//////////////////////////////////////////////////////////////////////////////
-//
-//  #####                                         #####
-// #     # #    #   ##   #    #  ####  ######    #     # #####  ###### ###### #####
-// #       #    #  #  #  ##   # #    # #         #       #    # #      #      #    #
-// #       ###### #    # # #  # #      #####      #####  #    # #####  #####  #    #
-// #       #    # ###### #  # # #  ### #               # #####  #      #      #    #
-// #     # #    # #    # #   ## #    # #         #     # #      #      #      #    #
-//  #####  #    # #    # #    #  ####  ######     #####  #      ###### ###### #####
-//
-//////////////////////////////////////////////////////////////////////////////
-void Meteor::changeSpeed(int interval) {
-  run();
+// void Meteor::fadeToBlack(int ledNo, byte fadeValue) {
+//  #ifdef ADAFRUIT_NEOPIXEL_H
+//     // NeoPixel
+//     uint32_t oldColor;
+//     uint8_t r, g, b;
+//     int value;
 
-  speedChangeCurrentMillis = millis();
+//     oldColor = strip.getPixelColor(ledNo);
+//     r = (oldColor & 0x00ff0000UL) >> 16;
+//     g = (oldColor & 0x0000ff00UL) >> 8;
+//     b = (oldColor & 0x000000ffUL);
 
-  if (speedChangeCurrentMillis - speedChangeLastMillis >= interval) {
-    speedChangeLastMillis = speedChangeCurrentMillis;
+//     r=(r<=10)? 0 : (int) r-(r*fadeValue/256);
+//     g=(g<=10)? 0 : (int) g-(g*fadeValue/256);
+//     b=(b<=10)? 0 : (int) b-(b*fadeValue/256);
 
-    if (slowDown) {
-      if (getInterval() >= 3)
-        setInterval(getInterval() - 1);
-      else
-        slowDown = false;
-    }
-
-    else if (!slowDown) {
-      if (getInterval() <= initialInterval)
-        setInterval(getInterval() + 1);
-      else
-        slowDown = true;
-    }
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// ###
-//  #  #    # ##### ###### #####  #    #   ##   #
-//  #  ##   #   #   #      #    # #    #  #  #  #
-//  #  # #  #   #   #####  #    # #    # #    # #
-//  #  #  # #   #   #      #####  #    # ###### #
-//  #  #   ##   #   #      #   #   #  #  #    # #
-// ### #    #   #   ###### #    #   ##   #    # ######
-//
-//////////////////////////////////////////////////////////////////////////////
-void Meteor::setInterval(int interval) {
-  this->interval = interval;
-}
-
-int Meteor::getInterval() {
-  return interval;
-}
-
-void Meteor::reset() {
-  currentStep = 0;
-}
+//     strip.setPixelColor(ledNo, r,g,b);
+//  #endif
+// //  #ifndef ADAFRUIT_NEOPIXEL_H
+// //    // FastLED
+// //    leds[ledNo].fadeToBlackBy( fadeValue );
+// //  #endif
+// }
