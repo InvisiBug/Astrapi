@@ -38,8 +38,6 @@ void Rain::begin() {
   for (int i = 0; i < totalRaindrops; i++) {  // Give each raindrop a random location
     rainDrop[i] = stripLEDs + random(0, stripLEDs);
     raindropColours[i] = colours[random(0, 8)];
-    // rainDrop[i] = 50;
-    Serial << rainDrop[i] << endl;
   }
 }
 
