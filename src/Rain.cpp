@@ -11,7 +11,7 @@ Rain::Rain(int totalLEDs, int stripLEDs, int cloudLEDs, CRGB *currentLED, int in
   this->currentLED = currentLED;
   this->interval = interval;
 
-  this->currentCloudLEDPos = stripLEDs;
+  this->currentCloudLEDPos = 0;
 
   totalRaindrops = 20;
 
@@ -56,7 +56,7 @@ void Rain::run(int wait) {
       if (currentCloudLEDPos < totalLEDs) {  // Basically a for loop but its non blocking
         currentCloudLEDPos++;
       } else {  // Random flashing effect every time the full cloud cycle has run
-        currentCloudLEDPos = stripLEDs;
+        currentCloudLEDPos = 0;
         if (random(0, 10) < 5) {  // Random lightning flash
           for (int i = stripLEDs; i < totalLEDs; i++) {
             currentLED[i] = 0xffffff;
@@ -73,34 +73,34 @@ void Rain::run(int wait) {
       }
     }
 
-    {  // Rain
-      rainCurrentMillis = millis();
-      if (rainCurrentMillis - rainLastMillis >= 20) {
-        rainLastMillis = rainCurrentMillis;
+    // {  // Rain
+    //   rainCurrentMillis = millis();
+    //   if (rainCurrentMillis - rainLastMillis >= 20) {
+    //     rainLastMillis = rainCurrentMillis;
 
-        for (int i = 0; i < stripLEDs; i++) {  // Turn off everything
-          currentLED[i] = 0x000000;
-        }
+    //     for (int i = 0; i < stripLEDs; i++) {  // Turn off everything
+    //       currentLED[i] = 0x000000;
+    //     }
 
-        for (int i = 0; i < totalRaindrops; i++) {
-          if (rainDrop[i] <= stripLEDs) {  // Only show the raindrops that are on the strip
-            currentLED[rainDrop[i]] = raindropColours[i];
-          }
+    //     for (int i = 0; i < totalRaindrops; i++) {
+    //       if (rainDrop[i] <= stripLEDs) {  // Only show the raindrops that are on the strip
+    //         currentLED[rainDrop[i]] = raindropColours[i];
+    //       }
 
-          if (rainDrop[i] > 1) {
-            rainDrop[i]--;
-          } else {
-            rainDrop[i] = stripLEDs + random(0, 50);
-            raindropColours[i] = colours[random(0, 8)];
-          }
-        }
+    //       if (rainDrop[i] > 1) {
+    //         rainDrop[i]--;
+    //       } else {
+    //         rainDrop[i] = stripLEDs + random(0, 50);
+    //         raindropColours[i] = colours[random(0, 8)];
+    //       }
+    //     }
 
-        if (currentRainLEDPos < stripLEDs) {  // Basically a for loop but its non blocking
-          currentRainLEDPos++;
-        } else {
-          currentRainLEDPos = 0;
-        }
-      }
-    }
+    //     if (currentRainLEDPos < stripLEDs) {  // Basically a for loop but its non blocking
+    //       currentRainLEDPos++;
+    //     } else {
+    //       currentRainLEDPos = 0;
+    //     }
+    //   }
+    // }
   }
 }

@@ -42,7 +42,7 @@
 ////////////////////////////////////////////////////////////////////////
 #define cloudLEDs 60
 #define stripLEDs 135
-#define totalLEDs stripLEDs + cloudLEDs
+#define totalLEDs 60
 // #define totalLEDs 60 // LEDs in the cloud
 
 #define LED_BUILTIN 2  // ESP32, nothing required for ESP8266
@@ -99,7 +99,7 @@ TaskHandle_t Task2;
 //     #    #    # #    # # #    # #####  ###### ######  ####
 //
 ////////////////////////////////////////////////////////////////////////
-int LEDBrightness = 25;  // As a percentage (saved as a dynamic variable to let us change later)
+int LEDBrightness = 50;  // As a percentage (saved as a dynamic variable to let us change later)
 
 const char* wifiSsid = "I Don't Mind";
 const char* wifiPassword = "Have2Biscuits";
@@ -118,7 +118,7 @@ long lastMQTTReconnectAttempt = 0;
 
 int testRand = 25;
 
-int mode;
+int mode = 1;
 
 ////////////////////////////////////////////////////////////////////////
 //
