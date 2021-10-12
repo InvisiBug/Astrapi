@@ -4,10 +4,8 @@
 #include "Streaming.h"
 using namespace std;
 
-Rain::Rain(int totalLEDs, int stripLEDs, int cloudLEDs, CRGB *currentLED, int interval) {
+Rain::Rain(int totalLEDs, CRGB *currentLED, int interval) {
   this->totalLEDs = totalLEDs;
-  this->stripLEDs = stripLEDs;
-  this->cloudLEDs = cloudLEDs;
   this->currentLED = currentLED;
   this->interval = interval;
 
@@ -35,10 +33,10 @@ void Rain::run() {
 }
 
 void Rain::begin() {
-  for (int i = 0; i < totalRaindrops; i++) {  // Give each raindrop a random location
-    rainDrop[i] = stripLEDs + random(0, stripLEDs);
-    raindropColours[i] = colours[random(0, 8)];
-  }
+  // for (int i = 0; i < totalRaindrops; i++) {  // Give each raindrop a random location
+  //   rainDrop[i] = stripLEDs + random(0, stripLEDs);
+  //   raindropColours[i] = colours[random(0, 8)];
+  // }
 }
 
 void Rain::run(int wait) {
@@ -57,19 +55,19 @@ void Rain::run(int wait) {
         currentCloudLEDPos++;
       } else {  // Random flashing effect every time the full cloud cycle has run
         currentCloudLEDPos = 0;
-        if (random(0, 10) < 5) {  // Random lightning flash
-          for (int i = stripLEDs; i < totalLEDs; i++) {
-            currentLED[i] = 0xffffff;
-          }
-          FastLED.show();
-          delay(25);
+        // if (random(0, 10) < 5) {  // Random lightning flash
+        //   for (int i = stripLEDs; i < totalLEDs; i++) {
+        //     currentLED[i] = 0xffffff;
+        //   }
+        //   FastLED.show();
+        //   delay(25);
 
-          for (int i = stripLEDs; i < totalLEDs; i++) {  // Reset cloud to random colours
-            currentLED[i] = colours[random(0, 8)];
-          }
-          FastLED.show();
-          delay(5);
-        }
+        //   for (int i = 0; i < totalLEDs; i++) {  // Reset cloud to random colours
+        //     currentLED[i] = colours[random(0, 8)];
+        //   }
+        //   FastLED.show();
+        //   delay(5);
+        // }
       }
     }
 

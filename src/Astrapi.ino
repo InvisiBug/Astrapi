@@ -18,7 +18,7 @@
 #include "WiFi.h"
 
 // Effects
-#include "Bolt.h"
+// #include "Bolt.h"
 #include "ColourCycle.h"
 #include "ColourFade.h"
 #include "Crisscross.h"  // Has some odd flickering
@@ -40,8 +40,6 @@
 //  ######  ###### #      # #    # #   #   #  ####  #    #  ####
 //
 ////////////////////////////////////////////////////////////////////////
-#define cloudLEDs 60
-#define stripLEDs 135
 #define totalLEDs 60
 // #define totalLEDs 60 // LEDs in the cloud
 
@@ -82,8 +80,8 @@ ColourCycle colourCycle(totalLEDs, currentLED, 50);
 ColourFade colourFade(totalLEDs, currentLED, 50);
 Rainbow rainbow(totalLEDs, currentLED, 50);
 Tetris tetris(totalLEDs, currentLED, 100);
-Bolt bolt(totalLEDs, stripLEDs, cloudLEDs, currentLED, 100);
-Rain rain(totalLEDs, stripLEDs, cloudLEDs, currentLED, 100);
+// Bolt bolt(totalLEDs, currentLED, 100);
+Rain rain(totalLEDs, currentLED, 100);
 
 TaskHandle_t Task1;
 TaskHandle_t Task2;
@@ -118,7 +116,7 @@ long lastMQTTReconnectAttempt = 0;
 
 int testRand = 25;
 
-int mode = 1;
+int mode = 8;
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -203,9 +201,9 @@ void core2Loop(void* pvParameters) {
           //   mode = 2;
           // }
           break;
-        case 2:          // Bolt
-          bolt.begin();  // Turns off all LEDs
-          bolt.run();
+        case 2:  // Bolt
+          // bolt.begin();  // Turns off all LEDs
+          // bolt.run();
 
           rain.begin();
 
@@ -239,121 +237,7 @@ void core2Loop(void* pvParameters) {
   }
 }
 
-void loop() {
-  // EVERY_N_MILLISECONDS(20) {
-  //   pacifica_loop();
-  //   FastLED.show();
-  // }
-
-  // switch (mode) {
-  //   case 0:  // Off
-  //     for (int i = 0; i < totalLEDs; i++) {
-  //       currentLED[i] = 0x000000;
-  //     }
-  //     FastLED.show();
-  //     delay(5);
-  //     break;
-  //   case 1:  // Rain
-  //     rain.run();
-  //     testRand = random(0, 1000);
-  //     // if (testRand < 2) {
-  //     //   mode = 2;
-  //     // }
-  //     break;
-  //   case 2:          // Bolt
-  //     bolt.begin();  // Turns off all LEDs
-  //     bolt.run();
-
-  //     mode = 1;
-  //     break;
-  //   case 4:
-  //     colourFade.run();
-  //     break;
-  //   case 3:
-  //     fire.run(55, 120, 20, true);
-  //     break;
-  //   case 5:
-  //     colourCycle.run();
-  //     break;
-  //   case 6:
-  //     meteorRain(0xff, 0xff, 0x00, 10, 64, true, 30);
-  //     break;
-  //   case 7:
-  //     tetris.run();
-  //     break;
-  // }
-
-  // rain.run();
-  // rainbow.run();
-
-  // for (int i = stripLEDs; i < totalLEDs; i++) {
-  //   currentLED[i] = 0x0040ff;
-  // }
-  // // FastLED.show();
-  // delay(2); // This delay prevents the cloud flickering (Dont have time to figure out why)
-
-  // for (int i = 0; i < stripLEDs; i++) {
-  //   currentLED[i] = 0x000000;
-  // }
-  // FastLED.show();
-
-  // bolt.run();
-
-  // uint32_t colours[8] = {// https://www.w3schools.com/colors/colors_picker.asp
-  //                        0x00ffbf, 0x00ffff, 0x00bfff, 0x0080ff, 0x0040ff, 0x0000ff, 0x4000ff};
-
-  // for (int i = cloudStart; i < cloudFinish; i++) {
-  //   currentLED[i] = colours[random(0, sizeof(colours))];
-  //   FastLED.show();
-  //   delay(50);
-  // }
-
-  // if (random(0, 10) < 5) {  // Random lightning flash
-  //   for (int i = cloudStart; i < cloudFinish; i++) {
-  //     currentLED[i] = 0xffffff;
-  //   }
-  //   FastLED.show();
-  //   delay(25);
-
-  //   for (int i = cloudStart; i < cloudFinish; i++) {
-  //     currentLED[i] = colours[random(0, sizeof(colours))];
-
-  //     // currentLED[totalLEDs - i] = 0x00ff00;
-  //   }
-  //   FastLED.show();
-  // }
-
-  // if (mode == 1) {
-  //   rain.run();
-  //   testRand = random(0, 100);
-  //   if (testRand < 10) {
-  //     mode = 2;
-  //   } else {
-  //     mode = 1;
-  //   }
-  // } else if (mode == 2) {
-  //   bolt.begin();  // Sets leds to off
-  //   bolt.run();
-
-  //   // When bolt has finished
-  //   testRand = random(0, 100);
-  //   if (testRand < 10) {
-  //     mode = 2;
-  //   } else {
-  //     mode = 1;
-  //   }
-  // }
-  // if (mode == 1) {
-  //   bolt.run(50);
-  //   mode = 2;  // Change mode once the bolt animation has finished
-  // } else if (mode == 2) {
-  //   fire.run(55, 120, 20, true);
-  // }
-  // tetris.run(50);
-  // colourFade.run();
-  // rainbow.run();
-  // meteorRain(0xff, 0xff, 0x00, 10, 64, true, 30);
-}
+void loop() {}
 
 CRGBPalette16 pacifica_palette_1 =
     {0x000507, 0x000409, 0x00030B, 0x00030D, 0x000210, 0x000212, 0x000114, 0x000117,
